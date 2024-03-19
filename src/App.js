@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import './App.css'
+import { useEffect } from 'react'
+import { loadMedical, loadNetwork, loadProvider } from './store/interactions'
+import { useDispatch } from 'react-redux'
+import { Form, Navbar } from './components'
+import config from './config.json'
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const dispatch = useDispatch()
+	const loadBlockchainData = async () => {
+		const provider = loadProvider(dispatch)
+		const chainId = await loadNetwork(provider, dispatch)
+		const medical_config = config[chainId].MedicalRecord
+		const medical = await loadMedical(provider, medical_config, dispatch)
+	}
+
+	useEffect(() => {
+		loadBlockchainData()
+	})
+	return (
+		<div className='App'>
+			<Navbar />
+			<Form />
+		</div>
+	)
 }
 
-export default App;
+export default App
