@@ -22,6 +22,14 @@ export const provider = (state = {}, action) => {
 const DEFAULT_MEDICAL_STATE = {
 	loaded: false,
 	contract: {},
+	transaction: {
+		isSuccessful: false,
+	},
+	allMedical: {
+		loaded: false,
+		data: [],
+	},
+	events: [],
 }
 
 export const medical = (state = DEFAULT_MEDICAL_STATE, action) => {
@@ -31,6 +39,24 @@ export const medical = (state = DEFAULT_MEDICAL_STATE, action) => {
 				...state,
 				loaded: true,
 				contract: action.medical,
+			}
+		case 'NEW_RECORD_LOADED':
+			return { ...state, transaction: { isPending: true, isSuccessful: false } }
+		case 'NEW_RECORD_SUCCESS':
+			return {
+				...state,
+				allMedical: { data: [action.medicalOrder, ...state.allMedical.data] },
+				transaction: { isPending: false, isSuccessful: true },
+				events: [action.event, ...state.events],
+			}
+		case 'NEW_RECORD_FAIL':
+			return {
+				...state,
+				transaction: {
+					isPending: false,
+					isError: true,
+					isSuccessful: false,
+				},
 			}
 		default:
 			return state

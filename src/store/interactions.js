@@ -42,4 +42,37 @@ export const submitRecord = async (
 	provider,
 	medical,
 	dispatch
-) => {}
+) => {
+	let transaction
+	dispatch({ type: 'NEW_RECORD_LOADED' })
+
+	try {
+		const signer = await provider.getSigner()
+		transaction = await medical
+			.connect(signer)
+			.addRecord(name, age, gender, bloodType, allergies, diagnosis, treatment)
+	} catch (e) {
+		dispatch({ type: 'NEW_RECORD_FAIL' })
+	}
+}
+
+export const subscribeToEvent = async (medical, dispatch) => {
+	medical.on(
+		'MedicalRecord_AddRecord',
+		(
+			recordId,
+			timestamp,
+			name,
+			age,
+			gender,
+			bloodType,
+			allergies,
+			diagnosis,
+			treatment,
+			event
+		) => {
+			const medicalOrder = event.args
+			dispatch({ type: 'NEW_RECORD_SUCCESS', medicalOrder, event })
+		}
+	)
+}
