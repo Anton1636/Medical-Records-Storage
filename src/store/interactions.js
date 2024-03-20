@@ -1,5 +1,6 @@
 import { ethers } from 'ethers'
 import MEDICAL_ABI from '../abis/MedicalRecords.json'
+import { medical } from './reducer'
 
 export const loadProvider = dispatch => {
 	const connection = new ethers.providers.Web3Provider(window.ethereum)
@@ -51,9 +52,45 @@ export const submitRecord = async (
 		transaction = await medical
 			.connect(signer)
 			.addRecord(name, age, gender, bloodType, allergies, diagnosis, treatment)
+		await transaction.wait()
 	} catch (e) {
 		dispatch({ type: 'NEW_RECORD_FAIL' })
 	}
+}
+
+export const deleteData = async (medical, recordId, dispatch, provider) => {
+	let transaction
+
+	dispatch({ type: 'DELETE_REQUEST_INITIALIZED' })
+
+	try {
+		const signer = await provider.getSigner()
+
+		transaction = await medical.connect(signer).deleteRecord(recordId)
+		await transaction.wait()
+	} catch (e) {
+		dispatch({ type: 'DELETE_REQUEST_FAILED' })
+	}
+}
+
+export const loadAllData = async (provider, medical, dispatch) => {
+	const block = await provider.getBlockNumber()
+	const medicalStream = await medical.queryFilter(
+		'MedicalRecord__AddRecord',
+		0,
+		block
+	)
+	const medicalRecords = medicalStream.map(event => event.args)
+
+	dispatch({ type: 'ALL_MEDICAL_RECORDS', medicalRecords })
+
+	const deleteStream = await medical.queryFilter(
+		'MedicalRecord__DeleteRecord',
+		0,
+		block
+	)
+	const deleteRecord = deleteStream.map(event => event.args)
+	dispatch({ type: 'ALL_DELETED_RECORDS', deleteRecord })
 }
 
 export const subscribeToEvent = async (medical, dispatch) => {
@@ -73,6 +110,24 @@ export const subscribeToEvent = async (medical, dispatch) => {
 		) => {
 			const medicalOrder = event.args
 			dispatch({ type: 'NEW_RECORD_SUCCESS', medicalOrder, event })
+			medical.on(
+				'MedicalRecord__DeleteRecord',
+				(
+					recordId,
+					timestamp,
+					name,
+					age,
+					gender,
+					bloodType,
+					allergies,
+					diagnosis,
+					treatment,
+					event
+				) => {
+					const deleteOrder = event.args
+					dispatch({ type: 'DELETE_RECORD_SUCCESS', deleteOrder, event })
+				}
+			)
 		}
 	)
 }

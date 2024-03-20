@@ -31,6 +31,13 @@ const Form = () => {
 			medical,
 			dispatch
 		)
+		setName(0)
+		setAge(0)
+		setGender(0)
+		setBloodType(0)
+		setAllergies(0)
+		setDiagnosis(0)
+		setTreatment(0)
 	}
 	return (
 		<div className='login-container'>
