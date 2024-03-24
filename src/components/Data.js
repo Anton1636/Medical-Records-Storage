@@ -39,7 +39,7 @@ const Data = () => {
 						</thead>
 						<tbody>
 							{orderData &&
-								orderData.mao((data, index) => {
+								orderData.map((data, index) => {
 									return (
 										<tr key={index}>
 											<td>{index + 1}</td>

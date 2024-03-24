@@ -1,6 +1,7 @@
 import './App.css'
 import { useEffect } from 'react'
 import {
+	loadAccount,
 	loadAllData,
 	loadMedical,
 	loadNetwork,
@@ -8,7 +9,7 @@ import {
 	subscribeToEvent,
 } from './store/interactions'
 import { useDispatch } from 'react-redux'
-import { Data, Form, Navbar, Option } from './components'
+import { Alert, Data, Form, Navbar, Option } from './components'
 import config from './config.json'
 import { Route, Routes } from 'react-router-dom'
 
@@ -18,11 +19,13 @@ function App() {
 		const provider = loadProvider(dispatch)
 		const chainId = await loadNetwork(provider, dispatch)
 		const medical_config = config[chainId].MedicalRecords
-		const medical = await loadMedical(
-			provider,
-			medical_config.address,
-			dispatch
-		)
+		window.ethereum.on('accountsChanged', () => {
+			loadAccount(provider, dispatch)
+		})
+		window.ethereum.on('chainChanged', () => {
+			window.location.reload()
+		})
+		const medical = loadMedical(provider, medical_config.address, dispatch)
 		loadAllData(provider, medical, dispatch)
 		subscribeToEvent(medical, dispatch)
 	}
@@ -38,6 +41,7 @@ function App() {
 				<Route path='/' exact element={<Form />} />
 				<Route path='/Data' exact element={<Data />} />
 			</Routes>
+			<Alert />
 		</div>
 	)
 }

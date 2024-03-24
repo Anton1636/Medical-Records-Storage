@@ -4,6 +4,7 @@ import moment from 'moment/moment'
 
 const allData = state => get(state, 'medical.allMedical.data', [])
 const deleteData = state => get(state, 'medical.deleteMedical.data', [])
+const events = state => get(state, 'medical.events')
 const openData = state => {
 	const all = allData(state)
 	const delet = deleteData(state)
@@ -18,7 +19,6 @@ const openData = state => {
 
 export const dataBookSelector = createSelector(openData, data => {
 	data = decorateOrderData(data)
-	console.log(data)
 	return data
 })
 
@@ -42,3 +42,7 @@ const decorateOrder = data => {
 			.format('h:mm:ssa d MMM yyyy'),
 	}
 }
+
+export const myEventSelector = createSelector(events, events => {
+	return events
+})

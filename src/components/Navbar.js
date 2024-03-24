@@ -42,8 +42,8 @@ const Navbar = () => {
 					<option value='0' disabled>
 						Select network
 					</option>
-					<option value='31337'>Localhost</option>
-					<option value='11155111'>Sepolia</option>
+					<option value='0x7A69'>Localhost</option>
+					<option value='0xAA36A7'>Sepolia</option>
 				</select>
 			</div>
 			<div className='nav__balance'>

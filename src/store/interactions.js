@@ -32,6 +32,26 @@ export const loadMedical = (provider, address, dispatch) => {
 	return medical
 }
 
+export const loadAllData = async (provider, medical, dispatch) => {
+	const block = await provider.getBlockNumber()
+	const medicalStream = await medical.queryFilter(
+		'MedicalRecord__AddRecord',
+		0,
+		block
+	)
+	const medicalRecords = medicalStream.map(event => event.args)
+
+	dispatch({ type: 'ALL_MEDICAL_RECORDS', medicalRecords })
+
+	const deleteStream = await medical.queryFilter(
+		'MedicalRecord__DeleteRecord',
+		0,
+		block
+	)
+	const deleteRecord = deleteStream.map(event => event.args)
+	dispatch({ type: 'ALL_DELETED_RECORDS', deleteRecord })
+}
+
 export const submitRecord = async (
 	name,
 	age,
@@ -71,26 +91,6 @@ export const deleteData = async (medical, recordId, dispatch, provider) => {
 	} catch (e) {
 		dispatch({ type: 'DELETE_REQUEST_FAILED' })
 	}
-}
-
-export const loadAllData = async (provider, medical, dispatch) => {
-	const block = await provider.getBlockNumber()
-	const medicalStream = await medical.queryFilter(
-		'MedicalRecord__AddRecord',
-		0,
-		block
-	)
-	const medicalRecords = medicalStream.map(event => event.args)
-
-	dispatch({ type: 'ALL_MEDICAL_RECORDS', medicalRecords })
-
-	const deleteStream = await medical.queryFilter(
-		'MedicalRecord__DeleteRecord',
-		0,
-		block
-	)
-	const deleteRecord = deleteStream.map(event => event.args)
-	dispatch({ type: 'ALL_DELETED_RECORDS', deleteRecord })
 }
 
 export const subscribeToEvent = async (medical, dispatch) => {
