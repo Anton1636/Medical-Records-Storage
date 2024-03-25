@@ -27,20 +27,24 @@ const Alert = () => {
 			{isPending ? (
 				<div className='alert' onClick={removeHandler}>
 					<div className='overlay--remove' ref={overlayRef}></div>
-					<div className='alertBox--remove' ref={alertRef}></div>
-					<h2>Action Pending...</h2>
+					<div className='alertBox--remove' ref={alertRef}>
+						<h2>Action Pending...</h2>
+					</div>
 				</div>
 			) : isError ? (
 				<div className='alert' onClick={removeHandler}>
 					<div className='overlay--remove' ref={overlayRef}></div>
-					<div className='alertBox--remove' ref={alertRef}></div>
-					<h2>Action will fail</h2>
+					<div className='alertBox--remove' ref={alertRef}>
+						<h2>Action will fail</h2>
+					</div>
 				</div>
 			) : !isPending && event[0] ? (
 				<div className='alert' onClick={removeHandler}>
 					<div className='overlay--remove' ref={overlayRef}></div>
-					<div className='alertBox--remove' ref={alertRef}></div>
-					<h2>Action Successful</h2>
+					<div className='alertBox--remove' ref={alertRef}>
+						<h2>Action Successful</h2>
+					</div>
+
 					<div className='transactionHashOut'>
 						<a
 							href={

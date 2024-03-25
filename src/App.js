@@ -18,6 +18,8 @@ function App() {
 	const loadBlockchainData = async () => {
 		const provider = loadProvider(dispatch)
 		const chainId = await loadNetwork(provider, dispatch)
+		console.log('Chain ID:', chainId)
+		console.log('Config:', config)
 		const medical_config = config[chainId].MedicalRecords
 		window.ethereum.on('accountsChanged', () => {
 			loadAccount(provider, dispatch)
@@ -25,7 +27,11 @@ function App() {
 		window.ethereum.on('chainChanged', () => {
 			window.location.reload()
 		})
-		const medical = loadMedical(provider, medical_config.address, dispatch)
+		const medical = await loadMedical(
+			provider,
+			medical_config.address,
+			dispatch
+		)
 		loadAllData(provider, medical, dispatch)
 		subscribeToEvent(medical, dispatch)
 	}
@@ -35,13 +41,15 @@ function App() {
 	})
 	return (
 		<div className='App'>
-			<Navbar />
-			<Option />
-			<Routes>
-				<Route path='/' exact element={<Form />} />
-				<Route path='/Data' exact element={<Data />} />
-			</Routes>
-			<Alert />
+			<div className='navbar'>
+				<Navbar />
+				<Option />
+				<Routes>
+					<Route path='/' exact element={<Form />} />
+					<Route path='/Data' exact element={<Data />} />
+				</Routes>
+				<Alert />
+			</div>
 		</div>
 	)
 }

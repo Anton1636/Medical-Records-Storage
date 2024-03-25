@@ -1,6 +1,5 @@
 import { ethers } from 'ethers'
 import MEDICAL_ABI from '../abis/MedicalRecords.json'
-import { medical } from './reducer'
 
 export const loadProvider = dispatch => {
 	const connection = new ethers.providers.Web3Provider(window.ethereum)
@@ -35,7 +34,7 @@ export const loadMedical = (provider, address, dispatch) => {
 export const loadAllData = async (provider, medical, dispatch) => {
 	const block = await provider.getBlockNumber()
 	const medicalStream = await medical.queryFilter(
-		'MedicalRecord__AddRecord',
+		'MedicalRecords__AddRecord',
 		0,
 		block
 	)
@@ -44,7 +43,7 @@ export const loadAllData = async (provider, medical, dispatch) => {
 	dispatch({ type: 'ALL_MEDICAL_RECORDS', medicalRecords })
 
 	const deleteStream = await medical.queryFilter(
-		'MedicalRecord__DeleteRecord',
+		'MedicalRecords__DeleteRecord',
 		0,
 		block
 	)
@@ -95,7 +94,7 @@ export const deleteData = async (medical, recordId, dispatch, provider) => {
 
 export const subscribeToEvent = async (medical, dispatch) => {
 	medical.on(
-		'MedicalRecord_AddRecord',
+		'MedicalRecords__AddRecord',
 		(
 			recordId,
 			timestamp,
@@ -111,7 +110,7 @@ export const subscribeToEvent = async (medical, dispatch) => {
 			const medicalOrder = event.args
 			dispatch({ type: 'NEW_RECORD_SUCCESS', medicalOrder, event })
 			medical.on(
-				'MedicalRecord__DeleteRecord',
+				'MedicalRecords__DeleteRecord',
 				(
 					recordId,
 					timestamp,

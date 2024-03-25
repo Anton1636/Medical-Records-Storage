@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const Option = () => {
 	return (
-		<div>
+		<div className='Option'>
 			<Link to='/' className='opt__form'>
 				Form
 			</Link>
